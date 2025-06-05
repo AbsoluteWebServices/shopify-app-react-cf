@@ -1,5 +1,5 @@
+import type { Route } from "./+types/app._index";
 import { useEffect } from "react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import {
   Page,
@@ -13,17 +13,15 @@ import {
   Link,
   InlineStack,
 } from "@shopify/polaris";
-import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
-import { authenticate } from "../shopify.server";
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+export const loader = async ({ context, request }: Route.LoaderArgs) => {
+  await context.shopify.authenticate.admin(request);
 
   return null;
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
+export const action = async ({ context, request }: Route.ActionArgs) => {
+  const { admin } = await context.shopify.authenticate.admin(request);
   const color = ["Red", "Orange", "Yellow", "Green"][
     Math.floor(Math.random() * 4)
   ];
@@ -94,7 +92,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export default function Index() {
   const fetcher = useFetcher<typeof action>();
 
-  const shopify = useAppBridge();
   const isLoading =
     ["loading", "submitting"].includes(fetcher.state) &&
     fetcher.formMethod === "POST";
@@ -107,16 +104,16 @@ export default function Index() {
     if (productId) {
       shopify.toast.show("Product created");
     }
-  }, [productId, shopify]);
+  }, [productId]);
   const generateProduct = () => fetcher.submit({}, { method: "POST" });
 
   return (
     <Page>
-      <TitleBar title="Remix app template">
+      <ui-title-bar title="Remix app template">
         <button variant="primary" onClick={generateProduct}>
           Generate a product
         </button>
-      </TitleBar>
+      </ui-title-bar>
       <BlockStack gap="500">
         <Layout>
           <Layout.Section>

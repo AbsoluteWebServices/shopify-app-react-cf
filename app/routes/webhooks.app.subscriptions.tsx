@@ -1,8 +1,9 @@
-import type { Route } from "./+types/webhooks.app.scopes_update";
+import type { Route } from "./+types/webhooks.app.subscriptions";
 
 export const action = async ({ context, request }: Route.ActionArgs) => {
-  const { admin, payload, session, topic, shop } =
+  const { admin, shop, session, topic } =
     await context.shopify.authenticate.webhook(request);
+
   console.log(`Received ${topic} webhook for ${shop}`);
 
   if (!admin || !session) {
@@ -11,10 +12,9 @@ export const action = async ({ context, request }: Route.ActionArgs) => {
   }
 
   switch (topic) {
-    case "APP_SCOPES_UPDATE":
-      const current = payload.current as string[];
-      session.scope = current.join(",");
-      await context.sessionStorage.storeSession(session);
+    case "APP_SUBSCRIPTIONS_UPDATE":
+      // await checkUsageAndCreateCharge(shop, admin.graphql, context.db);
+
       break;
   }
 

@@ -1,41 +1,54 @@
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/node";
-import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
-import { boundary } from "@shopify/shopify-app-remix/server";
+import type { Route } from "./+types/app";
+import { Link, Outlet, useNavigation } from "react-router";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
-import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
+import { Spinner } from "@shopify/polaris";
 
-import { authenticate } from "../shopify.server";
+import styles from "./app.module.css";
 
-export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
+export const links: Route.LinksFunction = () => [
+  {
+    rel: "preconnect",
+    href: "https://cdn.shopify.com",
+  },
+  {
+    rel: "stylesheet",
+    href: "https://cdn.shopify.com/static/fonts/inter/v4/styles.css",
+  },
+  { rel: "stylesheet", href: polarisStyles },
+];
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+export const meta: Route.MetaFunction = ({ data }) => [
+  {
+    name: "shopify-api-key",
+    content: data?.apiKey,
+  },
+];
 
-  return { apiKey: process.env.SHOPIFY_API_KEY || "" };
+export const loader = async ({ request, context }: Route.LoaderArgs) => {
+  await context.shopify.authenticate.admin(request);
+
+  return { apiKey: context.cloudflare.env.SHOPIFY_API_KEY || "" };
 };
 
-export default function App() {
-  const { apiKey } = useLoaderData<typeof loader>();
+export default function App({ loaderData }: Route.ComponentProps) {
+  const navigation = useNavigation();
+  const { apiKey } = loaderData;
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
-      <NavMenu>
+      <ui-nav-menu>
         <Link to="/app" rel="home">
           Home
         </Link>
-        <Link to="/app/additional">Additional page</Link>
-      </NavMenu>
-      <Outlet />
+      </ui-nav-menu>
+      {navigation.state === "loading" ? (
+        <div className={styles.loaderContainer}>
+          <Spinner accessibilityLabel="Loading..." size="large" />
+        </div>
+      ) : (
+        <Outlet />
+      )}
     </AppProvider>
   );
 }
-
-// Shopify needs Remix to catch some thrown responses, so that their headers are included in the response.
-export function ErrorBoundary() {
-  return boundary.error(useRouteError());
-}
-
-export const headers: HeadersFunction = (headersArgs) => {
-  return boundary.headers(headersArgs);
-};

@@ -1,0 +1,54 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "shopify-app-react-cf-dev",
+  "compatibility_date": "2025-06-01",
+  "main": "./workers/index.ts",
+  "vars": {
+    "SHOPIFY_APP_URL": "https://shopify-app-react-cf-dev.workers.dev",
+    "SHOPIFY_API_KEY": "xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "SHOPIFY_APP_SCOPES": "write_products",
+  },
+  "env": {
+    "production": {
+      "name": "shopify-app-react-cf",
+      "vars": {
+        "SHOPIFY_APP_URL": "https://shopify-app-react-cf.workers.dev",
+        "SHOPIFY_APP_SCOPES": "write_products",
+      },
+      "kv_namespaces": [
+        {
+          "binding": "SESSIONS",
+          "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "db-prod",
+          "database_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "migrations_dir": "drizzle"
+        }
+      ]
+    }
+  },
+  "observability": {
+    "enabled": true
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "SESSIONS",
+      "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "db-dev",
+      "database_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "migrations_dir": "drizzle"
+    }
+  ]
+}

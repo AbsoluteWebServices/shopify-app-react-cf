@@ -8,12 +8,11 @@ import {
   Text,
   BlockStack,
 } from "@shopify/polaris";
-import { TitleBar } from "@shopify/app-bridge-react";
 
 export default function AdditionalPage() {
   return (
     <Page>
-      <TitleBar title="Additional page" />
+      <ui-title-bar title="Additional page" />
       <Layout>
         <Layout.Section>
           <Card>

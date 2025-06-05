@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import type { Route } from "./+types/auth.login";
+import { Form } from "react-router";
 import {
   AppProvider as PolarisAppProvider,
   Button,
@@ -12,30 +12,40 @@ import {
 } from "@shopify/polaris";
 import polarisTranslations from "@shopify/polaris/locales/en.json";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
+import type { LoginError } from "@shopify/shopify-app-remix/server";
+import { LoginErrorType } from "@shopify/shopify-app-remix/server";
 
-import { login } from "../../shopify.server";
+interface LoginErrorMessage {
+  shop?: string;
+}
 
-import { loginErrorMessage } from "./error.server";
+function loginErrorMessage(loginErrors: LoginError): LoginErrorMessage {
+  if (loginErrors?.shop === LoginErrorType.MissingShop) {
+    return { shop: "Please enter your shop domain to log in" };
+  } else if (loginErrors?.shop === LoginErrorType.InvalidShop) {
+    return { shop: "Please enter a valid shop domain to log in" };
+  }
+
+  return {};
+}
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const errors = loginErrorMessage(await login(request));
+export const loader = async ({ request, context }: Route.LoaderArgs) => {
+  const errors = loginErrorMessage(await context.shopify.login(request));
 
   return { errors, polarisTranslations };
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const errors = loginErrorMessage(await login(request));
+export const action = async ({ request, context }: Route.ActionArgs) => {
+  const errors = loginErrorMessage(await context.shopify.login(request));
 
   return {
     errors,
   };
 };
 
-export default function Auth() {
-  const loaderData = useLoaderData<typeof loader>();
-  const actionData = useActionData<typeof action>();
+export default function Auth({ loaderData, actionData }: Route.ComponentProps) {
   const [shop, setShop] = useState("");
   const { errors } = actionData || loaderData;
 

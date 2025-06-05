@@ -3,7 +3,7 @@
 client_id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 name = "shopify-app-react-cf"
 handle = "shopify-app-react-cf"
-application_url = "https://shopify-app-react-cf-dev.workers.dev"
+application_url = "https://shopify-app-react-cf.workers.dev"
 embedded = true
 
 [build]
@@ -27,9 +27,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://shopify-app-react-cf-dev.workers.dev/auth/callback",
-  "https://shopify-app-react-cf-dev.workers.dev/auth/shopify/callback",
-  "https://shopify-app-react-cf-dev.workers.dev/api/auth/callback",
+  "https://shopify-app-react-cf.workers.dev/auth/callback",
+  "https://shopify-app-react-cf.workers.dev/auth/shopify/callback",
+  "https://shopify-app-react-cf.workers.dev/api/auth/callback",
 ]
 
 [pos]

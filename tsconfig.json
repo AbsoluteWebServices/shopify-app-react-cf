@@ -1,21 +1,18 @@
 {
-  "include": ["env.d.ts", "**/*.ts", "**/*.tsx"],
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.cloudflare.json"
+    }
+  ],
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "strict": true,
+    "checkJs": true,
+    "verbatimModuleSyntax": true,
     "skipLibCheck": true,
-    "isolatedModules": true,
-    "allowSyntheticDefaultImports": true,
-    "removeComments": false,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "allowJs": true,
-    "resolveJsonModule": true,
-    "jsx": "react-jsx",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "target": "ES2022",
-    "baseUrl": ".",
-    "types": ["node"]
+    "strict": true,
+    "noEmit": true
   }
 }
